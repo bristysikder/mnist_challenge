@@ -7,6 +7,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+import numpy as np
 
 class Model(object):
   def __init__(self):
@@ -37,10 +38,10 @@ class Model(object):
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
     # output layer
-    W_fc2 = self._weight_variable([1024,10])
+    self.W_fc2 = self._weight_variable([1024,10])
     b_fc2 = self._bias_variable([10])
 
-    self.pre_softmax = tf.matmul(h_fc1, W_fc2) + b_fc2
+    self.pre_softmax = tf.matmul(h_fc1, self.W_fc2) + b_fc2
 
     y_xent = tf.nn.sparse_softmax_cross_entropy_with_logits(
         labels=self.y_input, logits=self.pre_softmax)
@@ -53,6 +54,32 @@ class Model(object):
 
     self.num_correct = tf.reduce_sum(tf.cast(correct_prediction, tf.int64))
     self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+
+
+  # Projects a 2D matrix according to Sanjeev Arora Paper
+  def _matrix_project(self, A, eps, nu):
+      k = np.log(1.0 / nu) / (np.square(eps))
+      k = k.astype(int)
+      print("K:", k)
+      A_hat = tf.zeros(A.shape, tf.float32)
+      for i in range(k):
+          m = self._random_matrix(A.shape)
+          z = tf.reduce_sum(tf.multiply(m, A))
+          A_hat = tf.add(A_hat, tf.multiply(z, m))
+      A_hat = A_hat / k.astype(float)
+      return A_hat
+
+  # Returns a Random Matrix of shape with only iid +1 and -1, where +1 appears with probability frac
+  def _random_matrix(self, shape, frac=0.5):
+      m = tf.convert_to_tensor(np.random.binomial(1, frac, size=shape), dtype=tf.float32)
+      m = 2 * m - 1
+      return m
+
+  def compressWeights(self, eps=0.05, nu = 0.1):
+    W_fc2_compress = self._matrix_project(self.W_fc2, eps, nu)
+    compress_op = self.W_fc2.assign(W_fc2_compress)
+    return compress_op
 
   @staticmethod
   def _weight_variable(shape):
