@@ -9,8 +9,8 @@ from madry_tools.core import datatypes
 # a commit to a version of this repository with a stable version of the main
 # script
 GIT_COMMIT = 'https://github.com/MadryLab/adversarial_cifar/commit/0d92e07c24c3d3180f1eb447269615f2e41d27d5'
-MAIN_FILE_NAME = 'train.py'
-FILES_TO_ARCHIVE = ['job_parameters.json']
+MAIN_FILE_NAME = 'nat_train.py'
+FILES_TO_ARCHIVE = ['job_parameters.json', 'config.py', 'job_result.json']
 
 ### CREATE STUDY
 

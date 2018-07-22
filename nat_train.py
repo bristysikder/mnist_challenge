@@ -32,6 +32,8 @@ num_summary_steps = config['num_summary_steps']
 num_checkpoint_steps = config['num_checkpoint_steps']
 
 batch_size = config['training_batch_size']
+c_eps = config['c_eps']
+nu = config['nu']
 
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
@@ -68,7 +70,7 @@ merged_summaries = tf.summary.merge_all()
 
 shutil.copy('config.json', model_dir)
 
-compress_op = model.compressWeights(eps = config['c_eps'], nu = config['nu'])
+compress_op = model.compressWeights(eps = c_eps, nu = nu)
 
 with tf.Session() as sess:
   # Initialize the summary writer, global variables, and our time counter.
@@ -110,16 +112,27 @@ with tf.Session() as sess:
                    os.path.join(model_dir, 'checkpoint'),
                    global_step=global_step)
 
-    if (ii == max_num_training_steps):
-        print('=======================================================')
-        print('     Training Complete.')
-        print('         Compressing the last Fully Connected layer')
-        sess.run(compress_op)
-        tot_acc = sess.run(model.accuracy, feed_dict= {model.x_input: mnist.test.images,
-                                                       model.y_input: mnist.test.labels})
-        print('    Total Test accuracy {:.4}%'.format(tot_acc * 100))
-        print('=======================================================')
+
+  print('=======================================================')
+  print('     Training Complete.')
+  print('         Compressing the last Fully Connected layer')
+  test_dict = {model.x_input: mnist.test.images, model.y_input: mnist.test.labels}
+  before_test_acc =  sess.run(model.accuracy, feed_dict=test_dict)
+
+  sess.run(compress_op)
+
+  after_test_acc = sess.run(model.accuracy, feed_dict=test_dict)
+  summary = sess.run(merged_summaries, feed_dict=test_dict)
+  summary_writer.add_summary(summary, global_step.eval(sess))
+
+  print('    Before Test accuracy {:.4}%'.format(before_test_acc * 100))
+  print('    After  Test accuracy {:.4}%'.format(after_test_acc * 100))
+  print('=======================================================')
 
 
-
-
+  with open('job_result.json', 'w') as result_file:
+    final_result = {'Before_Test_ ccuracy': before_test_acc,
+                    'After_Test_Accuracy': after_test_acc,
+                    'Compression_eps':c_eps, 'Compression_nu': nu,
+                    'Training_Steps': max_num_training_steps}
+    json.dump(final_result, result_file, sort_keys=True, indent=4)

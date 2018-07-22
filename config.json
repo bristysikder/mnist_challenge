@@ -7,7 +7,7 @@
   "max_num_training_steps":100000,
   "num_output_steps": 100,
   "num_summary_steps": 100,
-  "num_checkpoint_steps": 300,
+  "num_checkpoint_steps": 500,
   "training_batch_size": 50,
 
   "_comment": "===== EVAL CONFIGURATION =====",
