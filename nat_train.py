@@ -131,8 +131,9 @@ with tf.Session() as sess:
 
 
   with open('job_result.json', 'w') as result_file:
-    final_result = {'Before_Test_ ccuracy': before_test_acc,
-                    'After_Test_Accuracy': after_test_acc,
-                    'Compression_eps':c_eps, 'Compression_nu': nu,
+    final_result = {'Before_Test_ ccuracy': float( before_test_acc)}
+                    'After_Test_Accuracy': float(after_test_acc),
+                    'Compression_eps': float(c_eps), 'Compression_nu': float(nu),
                     'Training_Steps': max_num_training_steps}
+    """
     json.dump(final_result, result_file, sort_keys=True, indent=4)

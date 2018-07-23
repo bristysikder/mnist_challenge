@@ -78,7 +78,7 @@ class Model(object):
 
   def compressWeights(self, eps=0.05, nu = 0.1):
     W_fc2_compress = self._matrix_project(self.W_fc2, eps, nu)
-    compress_op = self.W_fc2.assign(W_fc2_compress)
+    compress_fc2 = self.W_fc2.assign(W_fc2_compress)
     return compress_op
 
   @staticmethod

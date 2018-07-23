@@ -4,7 +4,7 @@
 
   "_comment": "===== TRAINING CONFIGURATION =====",
   "random_seed": 4557077,
-  "max_num_training_steps":100000,
+  "max_num_training_steps":10000,
   "num_output_steps": 100,
   "num_summary_steps": 100,
   "num_checkpoint_steps": 500,
@@ -24,6 +24,6 @@
   "store_adv_path": "attack.npy",
 
   "_comment": "======COMPRESSEION CONFIGURATION=========",
-  "c_eps": 0.1,
-  "nu":0.1
+  "c_eps": 0.02,
+  "nu":0.02
 }

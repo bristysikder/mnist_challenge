@@ -8,7 +8,7 @@ from madry_tools.core import datatypes
 
 # a commit to a version of this repository with a stable version of the main
 # script
-GIT_COMMIT = 'https://github.com/MadryLab/adversarial_cifar/commit/0d92e07c24c3d3180f1eb447269615f2e41d27d5'
+GIT_COMMIT = 'https://github.com/bristysikder/mnist_challenge/commit/8f167768bf09f22883a1c9fc464c0ee1692c0cd8'
 MAIN_FILE_NAME = 'nat_train.py'
 FILES_TO_ARCHIVE = ['job_parameters.json', 'config.py', 'job_result.json']
 
@@ -18,14 +18,14 @@ FILES_TO_ARCHIVE = ['job_parameters.json', 'config.py', 'job_result.json']
 client = RPCClient()
 username = getpass.getuser()
 
-study_name = 'MNIST_Compression'
+study_name = 'bristy_mnist_compression'
 study_id, error_msg = client.create_study(study_name)
 
 if error_msg is not None:
     print(error_msg)
     sys.exit(1)
 
-train_steps = [i * 5000 for i in xrange(200)]
+train_steps = [i * 5000 for i in range(200)]
 
 
 ### CREATE JOBS
