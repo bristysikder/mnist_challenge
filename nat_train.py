@@ -69,8 +69,7 @@ tf.summary.scalar('xent :', model.xent / batch_size)
 merged_summaries = tf.summary.merge_all()
 
 shutil.copy('config.json', model_dir)
-
-compress_op = model.compressWeights(eps = c_eps, nu = nu)
+compress_ops = model.compressWeights(eps=c_eps, nu=nu)
 
 with tf.Session() as sess:
   # Initialize the summary writer, global variables, and our time counter.
@@ -78,8 +77,11 @@ with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
   training_time = 0.0
 
+
   # Main training loop
   for ii in range(max_num_training_steps + 1):
+    #print(":::: Iteration :::", ii)
+
     x_batch, y_batch = mnist.train.next_batch(batch_size)
     nat_dict = {model.x_input: x_batch,
                 model.y_input: y_batch}
@@ -115,11 +117,12 @@ with tf.Session() as sess:
 
   print('=======================================================')
   print('     Training Complete.')
-  print('         Compressing the last Fully Connected layer')
+
   test_dict = {model.x_input: mnist.test.images, model.y_input: mnist.test.labels}
   before_test_acc =  sess.run(model.accuracy, feed_dict=test_dict)
 
-  sess.run(compress_op)
+  print('         Compressing the last Fully Connected layer')
+  sess.run(compress_ops)
 
   after_test_acc = sess.run(model.accuracy, feed_dict=test_dict)
   summary = sess.run(merged_summaries, feed_dict=test_dict)
@@ -131,9 +134,8 @@ with tf.Session() as sess:
 
 
   with open('job_result.json', 'w') as result_file:
-    final_result = {'Before_Test_ ccuracy': float( before_test_acc)}
+    final_result = {'Before_Test_ ccuracy': float( before_test_acc),
                     'After_Test_Accuracy': float(after_test_acc),
                     'Compression_eps': float(c_eps), 'Compression_nu': float(nu),
                     'Training_Steps': max_num_training_steps}
-    """
     json.dump(final_result, result_file, sort_keys=True, indent=4)

@@ -31,11 +31,11 @@ class Model(object):
     h_pool2 = self._max_pool_2x2(h_conv2)
 
     # first fully connected layer
-    W_fc1 = self._weight_variable([7 * 7 * 64, 1024])
+    self.W_fc1 = self._weight_variable([7 * 7 * 64, 1024])
     b_fc1 = self._bias_variable([1024])
 
     h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 64])
-    h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
+    h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, self.W_fc1) + b_fc1)
 
     # output layer
     self.W_fc2 = self._weight_variable([1024,10])
@@ -77,9 +77,13 @@ class Model(object):
       return m
 
   def compressWeights(self, eps=0.05, nu = 0.1):
+    print(" ......................... Entering Compress")
+    W_fc1_compress = self._matrix_project(self.W_fc1, eps, nu)
+    compress_op = self.W_fc1.assign(W_fc1_compress)
     W_fc2_compress = self._matrix_project(self.W_fc2, eps, nu)
-    compress_fc2 = self.W_fc2.assign(W_fc2_compress)
-    return compress_op
+    compress_op_2 = self.W_fc2.assign(W_fc2_compress)
+    print(" ......................... Exiting Compress")
+    return [compress_op, compress_op_2]
 
   @staticmethod
   def _weight_variable(shape):
