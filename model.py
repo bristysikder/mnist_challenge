@@ -58,32 +58,36 @@ class Model(object):
 
 
   # Projects a 2D matrix according to Sanjeev Arora Paper
-  def _matrix_project(self, A, eps, nu):
+  def _matrix_project(self, sess, A_tf, eps, nu):
+      A = sess.run(A_tf)
       k = np.log(1.0 / nu) / (np.square(eps))
       k = k.astype(int)
       print("K:", k)
-      A_hat = tf.zeros(A.shape, tf.float32)
+      A_hat = np.zeros(A.shape)
       for i in range(k):
           m = self._random_matrix(A.shape)
-          z = tf.reduce_sum(tf.multiply(m, A))
-          A_hat = tf.add(A_hat, tf.multiply(z, m))
+          z = np.sum(np.multiply(m, A))
+          A_hat = A_hat + np.multiply(z, m)
       A_hat = A_hat / k.astype(float)
       return A_hat
 
   # Returns a Random Matrix of shape with only iid +1 and -1, where +1 appears with probability frac
   def _random_matrix(self, shape, frac=0.5):
-      m = tf.convert_to_tensor(np.random.binomial(1, frac, size=shape), dtype=tf.float32)
+      m = np.random.binomial(1, frac, size=shape)
       m = 2 * m - 1
       return m
 
-  def compressWeights(self, eps=0.05, nu = 0.1):
+
+  def compressWeights(self, sess, eps=0.05, nu = 0.1):
     print(" ......................... Entering Compress")
-    W_fc1_compress = self._matrix_project(self.W_fc1, eps, nu)
+    W_fc1_compress = self._matrix_project(sess, self.W_fc1, eps, nu)
     compress_op = self.W_fc1.assign(W_fc1_compress)
-    W_fc2_compress = self._matrix_project(self.W_fc2, eps, nu)
+    W_fc2_compress = self._matrix_project(sess, self.W_fc2, eps, nu)
     compress_op_2 = self.W_fc2.assign(W_fc2_compress)
+    sess.run([compress_op, compress_op_2])
     print(" ......................... Exiting Compress")
-    return [compress_op, compress_op_2]
+
+    return
 
   @staticmethod
   def _weight_variable(shape):

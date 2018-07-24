@@ -69,7 +69,7 @@ tf.summary.scalar('xent :', model.xent / batch_size)
 merged_summaries = tf.summary.merge_all()
 
 shutil.copy('config.json', model_dir)
-compress_ops = model.compressWeights(eps=c_eps, nu=nu)
+
 
 with tf.Session() as sess:
   # Initialize the summary writer, global variables, and our time counter.
@@ -122,7 +122,8 @@ with tf.Session() as sess:
   before_test_acc =  sess.run(model.accuracy, feed_dict=test_dict)
 
   print('         Compressing the last Fully Connected layer')
-  sess.run(compress_ops)
+  model.compressWeights(sess, eps=c_eps, nu=nu)
+
 
   after_test_acc = sess.run(model.accuracy, feed_dict=test_dict)
   summary = sess.run(merged_summaries, feed_dict=test_dict)
