@@ -17,7 +17,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
 
-from model import Model
+from model import Model, MLP
 from pgd_attack import LinfPGDAttack
 
 with open('config.json') as config_file:
@@ -38,7 +38,7 @@ nu = config['nu']
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
-model = Model()
+model = MLP()
 
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,
