@@ -17,7 +17,6 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
 import argparse
-import util
 from model import Model, MLP, DeepMLP
 from pgd_attack import LinfPGDAttack
 import utilities
