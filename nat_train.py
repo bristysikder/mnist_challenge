@@ -16,12 +16,20 @@ from timeit import default_timer as timer
 import tensorflow as tf
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
-
-from model import Model, MLP
+import argparse
+import util
+from model import Model, MLP, DeepMLP
 from pgd_attack import LinfPGDAttack
+import utilities
 
-with open('config.json') as config_file:
-    config = json.load(config_file)
+parser = argparse.ArgumentParser(description='Train script options',
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-c', '--config', type=str,
+                    help='path to config file',
+                    default='config.json', required=False)
+args = parser.parse_args()
+
+config = utilities.get_config(args.config)
 
 # Setting up training parameters
 tf.set_random_seed(config['random_seed'])
@@ -38,7 +46,7 @@ nu = config['nu']
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
-model = MLP()
+model = DeepMLP(hidden_units= 256)
 
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,

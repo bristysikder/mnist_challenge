@@ -108,55 +108,55 @@ class DeepMLP(object):
         A multilayer percepetron for image classification.
        Let's suppose this has 10 layers wuth ~hidden units each
   """
-  def __init__(self):
+  def __init__(self, hidden_units = 128):
     print(" ********** Using only Fully Connected Layers **************")
     self.x_input = tf.placeholder(tf.float32, shape = [None, 784])
     self.y_input = tf.placeholder(tf.int64, shape = [None])
 
     self.x_image = tf.reshape(self.x_input, [-1, 28, 28, 1])
-
+    self.H = hidden_units
     # first fully connected layer
-    self.W_fc1 = self._weight_variable([28 * 28, 128])
-    b_fc1 = self._bias_variable([128])
+    self.W_fc1 = self._weight_variable([28 * 28, self.H])
+    b_fc1 = self._bias_variable([self.H])
 
     x_image_flat = tf.reshape(self.x_image, [-1, 28 * 28])
     h_fc1 = tf.nn.relu(tf.matmul(x_image_flat, self.W_fc1) + b_fc1)
 
-    self.W_fc2 = self._weight_variable([128, 128])
-    b_fc2 = self._bias_variable([128])
+    self.W_fc2 = self._weight_variable([self.H, self.H])
+    b_fc2 = self._bias_variable([self.H])
     h_fc2 = tf.nn.relu(tf.matmul(h_fc1, self.W_fc2) + b_fc2)
 
-    self.W_fc3 = self._weight_variable([128, 128])
-    b_fc3 = self._bias_variable([128])
+    self.W_fc3 = self._weight_variable([self.H, self.H])
+    b_fc3 = self._bias_variable([self.H])
     h_fc3 = tf.nn.relu(tf.matmul(h_fc2, self.W_fc3) + b_fc3)
 
 
-    self.W_fc4 = self._weight_variable([128, 128])
-    b_fc4 = self._bias_variable([128])
+    self.W_fc4 = self._weight_variable([self.H, self.H])
+    b_fc4 = self._bias_variable([self.H])
     h_fc4 = tf.nn.relu(tf.matmul(h_fc3, self.W_fc4) + b_fc4)
 
-    self.W_fc5 = self._weight_variable([128, 128])
-    b_fc5 = self._bias_variable([128])
+    self.W_fc5 = self._weight_variable([self.H, self.H])
+    b_fc5 = self._bias_variable([self.H])
     h_fc5 = tf.nn.relu(tf.matmul(h_fc4, self.W_fc5) + b_fc5)
 
-    self.W_fc6 = self._weight_variable([128, 128])
-    b_fc6 = self._bias_variable([128])
+    self.W_fc6 = self._weight_variable([self.H, self.H])
+    b_fc6 = self._bias_variable([self.H])
     h_fc6 = tf.nn.relu(tf.matmul(h_fc5, self.W_fc6) + b_fc6)
 
-    self.W_fc7 = self._weight_variable([128, 128])
-    b_fc7 = self._bias_variable([128])
+    self.W_fc7 = self._weight_variable([self.H, self.H])
+    b_fc7 = self._bias_variable([self.H])
     h_fc7 = tf.nn.relu(tf.matmul(h_fc6, self.W_fc7) + b_fc7)
 
-    self.W_fc8 = self._weight_variable([128, 128])
-    b_fc8 = self._bias_variable([128])
+    self.W_fc8 = self._weight_variable([self.H, self.H])
+    b_fc8 = self._bias_variable([self.H])
     h_fc8 = tf.nn.relu(tf.matmul(h_fc7, self.W_fc8) + b_fc8)
 
-    self.W_fc9 = self._weight_variable([128, 128])
-    b_fc9 = self._bias_variable([128])
+    self.W_fc9 = self._weight_variable([self.H, self.H])
+    b_fc9 = self._bias_variable([self.H])
     h_fc9 = tf.nn.relu(tf.matmul(h_fc8, self.W_fc9) + b_fc9)
 
     # output layer
-    self.W_fc10 = self._weight_variable([128,10])
+    self.W_fc10 = self._weight_variable([self.H,10])
     b_fc10 = self._bias_variable([10])
 
     self.pre_softmax = tf.matmul(h_fc9, self.W_fc10) + b_fc10
