@@ -24,6 +24,6 @@
   "store_adv_path": "attack.npy",
 
   "_comment": "======COMPRESSEION CONFIGURATION=========",
-  "c_eps": 0.02,
-  "nu":0.02
+  "c_eps": 0.01,
+  "nu":0.01
 }
