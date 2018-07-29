@@ -38,7 +38,7 @@ num_output_steps = config['num_output_steps']
 num_summary_steps = config['num_summary_steps']
 num_checkpoint_steps = config['num_checkpoint_steps']
 num_hidden_units = config['hidden_units']
-
+num_layers = config['num_layers']
 batch_size = config['training_batch_size']
 c_eps = config['c_eps']
 nu = config['nu']
@@ -47,7 +47,7 @@ compression_k = np.log(1.0/nu) / (np.square(c_eps))
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
-model = MLP(hidden_units=num_hidden_units)
+model = DeepMLP(hidden_units=num_hidden_units, num_layers = num_layers)
 
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,
