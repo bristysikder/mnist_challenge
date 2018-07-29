@@ -37,15 +37,17 @@ max_num_training_steps = config['max_num_training_steps']
 num_output_steps = config['num_output_steps']
 num_summary_steps = config['num_summary_steps']
 num_checkpoint_steps = config['num_checkpoint_steps']
+num_hidden_units = config['hidden_units']
 
 batch_size = config['training_batch_size']
 c_eps = config['c_eps']
 nu = config['nu']
+compression_k = np.log(1.0/nu) / (np.square(c_eps))
 
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
-model = DeepMLP(hidden_units= 256)
+model = MLP(hidden_units=num_hidden_units)
 
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,
@@ -140,10 +142,11 @@ with tf.Session() as sess:
   print('    After  Test accuracy {:.4}%'.format(after_test_acc * 100))
   print('=======================================================')
 
-
+ 
   with open('job_result.json', 'w') as result_file:
-    final_result = {'Before_Test_ ccuracy': float( before_test_acc),
-                    'After_Test_Accuracy': float(after_test_acc),
+    final_result = {'Before Compression Test  Accuracy': float( before_test_acc),
+                    'After Compression Test Accuracy': float(after_test_acc),
                     'Compression_eps': float(c_eps), 'Compression_nu': float(nu),
+                    'Compression_k' : float(compression_k), 
                     'Training_Steps': max_num_training_steps}
     json.dump(final_result, result_file, sort_keys=True, indent=4)

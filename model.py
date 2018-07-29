@@ -12,24 +12,27 @@ import numpy as np
 class MLP(object):
   """
         A multilayer percepetron for image classification.
-        Currently has only one hidden layer with 1024 hidden units.
+        This has only one hidden layer with configurable number of hidden units. 
+
   """
-  def __init__(self):
-    print(" ********** Using only Fully Connected Layers **************")
+  def __init__(self, hidden_units = 1024):
+   
+    print(" ---- Using a one-layer MLP with ", hidden_units, " Hidden units ----")
     self.x_input = tf.placeholder(tf.float32, shape = [None, 784])
     self.y_input = tf.placeholder(tf.int64, shape = [None])
+    self.hidden_units = hidden_units
 
     self.x_image = tf.reshape(self.x_input, [-1, 28, 28, 1])
 
     # first fully connected layer
-    self.W_fc1 = self._weight_variable([28 * 28, 1024])
-    b_fc1 = self._bias_variable([1024])
+    self.W_fc1 = self._weight_variable([28 * 28, self.hidden_units])
+    b_fc1 = self._bias_variable([self.hidden_units])
 
     x_image_flat = tf.reshape(self.x_image, [-1, 28 * 28])
     h_fc1 = tf.nn.relu(tf.matmul(x_image_flat, self.W_fc1) + b_fc1)
 
     # output layer
-    self.W_fc2 = self._weight_variable([1024,10])
+    self.W_fc2 = self._weight_variable([self.hidden_units, 10])
     b_fc2 = self._bias_variable([10])
 
     self.pre_softmax = tf.matmul(h_fc1, self.W_fc2) + b_fc2
@@ -46,15 +49,17 @@ class MLP(object):
     self.num_correct = tf.reduce_sum(tf.cast(correct_prediction, tf.int64))
     self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-
-
   # Projects a 2D matrix according to Sanjeev Arora Paper
   def _matrix_project(self, sess, A_tf, eps, nu):
       A = sess.run(A_tf)
       k = np.log(1.0 / nu) / (np.square(eps))
       k = k.astype(int)
-      print("K:", k)
       A_hat = np.zeros(A.shape)
+      total_params = A.shape[0] * A.shape[1]
+      compression_ratio = total_params / k
+      print('k : {} .. Matrix Params: {}.. Compression Ratio {:.3f}'.format(
+	k, total_params, compression_ratio))
+      k = k.astype(int) 
       for i in range(k):
           m = self._random_matrix(A.shape)
           z = np.sum(np.multiply(m, A))
@@ -71,7 +76,7 @@ class MLP(object):
 
   def compressWeights(self, sess, eps=0.05, nu = 0.1):
     print(" ......................... Entering Compress")
-    print(" ********** Using only Fully Connected Layers **************")
+    print(" ********** Simple MLP with just one hidden layer  **************")
     W_fc1_compress = self._matrix_project(sess, self.W_fc1, eps, nu)
     compress_op = self.W_fc1.assign(W_fc1_compress)
     W_fc2_compress = self._matrix_project(sess, self.W_fc2, eps, nu)

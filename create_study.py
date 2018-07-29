@@ -18,7 +18,7 @@ FILES_TO_ARCHIVE = ['job_parameters.json']
 client = RPCClient()
 username = getpass.getuser()
 
-study_name = 'mnist_compression_simple_mlp'
+study_name = 'mnist_compression_simple_mlp_v0'
 study_id, error_msg = client.create_study(study_name)
 
 if error_msg is not None:
@@ -26,16 +26,20 @@ if error_msg is not None:
     sys.exit(1)
 
 # Epsilon from Algorith #1 of Sanjeev Aroras paper
-epsilons = [0.5, 0.25, 0.1, 0.05]
+epsilons = [0.5, 0.25, 0.1, 0.05, 0.01, 0.005]
+hidden_units = [ 256, 1024, 4096, 16384]
+grid = product(epsilons, hidden_units) 
 
 ### CREATE JOBS
 jobs = []
 prio = 200
 
-for i, eps in enumerate( epsilons):
-    model_dir = ('models/compression_%d') % i
-    params = {'c_eps': eps, 'nu': eps, 
-              'model_dir': model_dir }
+for eps, h  in grid:
+    model_dir = ('models/compression_eps_%.3f_hid_unit%_d') % (eps, h)
+    params = {'c_eps': eps, 
+ 	      'nu': eps, 
+              'model_dir': model_dir,
+              'hidden_units': h }
     parameter_json = json.dumps(params)
     job_info = datatypes.JobCreationInfo(
         git_commit=GIT_COMMIT,
