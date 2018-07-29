@@ -16,7 +16,7 @@ def get_config(config_path):
 
     config = base_config
     for section, d in param_config.items():
-        config[section].update(d)
+        config[section] = d
     return config
 
 
