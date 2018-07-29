@@ -280,7 +280,13 @@ class Model(object):
       A = sess.run(A_tf)
       k = np.log(1.0 / nu) / (np.square(eps))
       k = k.astype(int)
-      print("K:", k)
+     
+      total_params = A.shape[0] * A.shape[1]
+      compression_ratio = total_params / k
+      print(" Matrix Shape", A.shape)
+      print('k : {} .. Matrix Params: {}.. Compression Ratio {:.3f}'.format(
+          k, total_params, compression_ratio))
+      
       A_hat = np.zeros(A.shape)
       for i in range(k):
           m = self._random_matrix(A.shape)
@@ -295,7 +301,7 @@ class Model(object):
       m = 2 * m - 1
       return m
 
-  def compressFirstFC(selfs, sess, eps=0.05, nu=0.1):
+  def compressFirstFC(self, sess, eps=0.05, nu=0.1):
     print(" ......................... Compressing First FC layer ....... ")
     W_fc1_compress = self._matrix_project(sess, self.W_fc1, eps, nu)
     compress_op = self.W_fc1.assign(W_fc1_compress)

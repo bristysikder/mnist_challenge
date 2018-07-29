@@ -49,7 +49,9 @@ compression_k = np.log(1.0/nu) / (np.square(c_eps))
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
 model = Model()
-
+print("==== Config ===")
+print(config)
+print("===============")
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,
                                                    global_step=global_step)

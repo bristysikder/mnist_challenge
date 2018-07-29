@@ -28,6 +28,6 @@
   "nu":0.2,
   "hidden_units": 24,
   "num_layers": 5,
-  "compress_first_fc": false,
-  "compress_second_fc": false
+  "compress_first_fc": true,
+  "compress_second_fc": true
 }

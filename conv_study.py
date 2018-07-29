@@ -8,8 +8,7 @@ from madry_tools.core import datatypes
 
 # a commit to a version of this repository with a stable version of the main
 # script
-
-GIT_COMMIT = 'https://github.com/bristysikder/mnist_challenge/commit/ef32be995e7f9ae1ad29c5e35c800075a831f1db'
+GIT_COMMIT = 'https://github.com/bristysikder/mnist_challenge/commit/d9345e5fe97251692a4682acd8358779cfe50802'
 MAIN_FILE_NAME = 'conv_train.py'
 FILES_TO_ARCHIVE = ['job_parameters.json']
 
@@ -19,7 +18,7 @@ FILES_TO_ARCHIVE = ['job_parameters.json']
 client = RPCClient()
 username = getpass.getuser()
 
-study_name = 'mnist_conv_v1'
+study_name = 'mnist_conv_v5'
 study_id, error_msg = client.create_study(study_name)
 
 if error_msg is not None:
@@ -38,7 +37,6 @@ jobs = []
 prio = 200
 
 for eps, f, s, steps  in grid:
-    print(" Eps ", eps, " First FC :", f, "Second FC:", s)
     model_dir = ('models/compression_prio_%d') % prio
     params = {'c_eps': eps, 
  	      'nu': eps, 
