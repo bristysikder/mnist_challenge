@@ -59,7 +59,6 @@ class MLP(object):
       compression_ratio = total_params / k
       print('k : {} .. Matrix Params: {}.. Compression Ratio {:.3f}'.format(
 	k, total_params, compression_ratio))
-      k = k.astype(int) 
       for i in range(k):
           m = self._random_matrix(A.shape)
           z = np.sum(np.multiply(m, A))
@@ -114,7 +113,7 @@ class DeepMLP(object):
        Let's suppose this has 10 layers wuth ~hidden units each
   """
   def __init__(self, hidden_units = 128):
-    print(" ********** Using only Fully Connected Layers **************")
+    print(" ********** Using a Deep MLP **************")
     self.x_input = tf.placeholder(tf.float32, shape = [None, 784])
     self.y_input = tf.placeholder(tf.int64, shape = [None])
 
@@ -185,7 +184,10 @@ class DeepMLP(object):
       A = sess.run(A_tf)
       k = np.log(1.0 / nu) / (np.square(eps))
       k = k.astype(int)
-      print("K:", k)
+      total_params = A.shape[0] * A.shape[1]
+      compression_ratio = total_params / k
+      print('k : {} .. Matrix Params: {}.. Compression Ratio {:.3f}'.format(
+          k, total_params, compression_ratio))
       A_hat = np.zeros(A.shape)
       for i in range(k):
           m = self._random_matrix(A.shape)
@@ -203,7 +205,7 @@ class DeepMLP(object):
 
   def compressWeights(self, sess, eps=0.05, nu = 0.1):
     print(" ......................... Entering Compress")
-    print(" ********** Using only Fully Connected Layers **************")
+    print(" ********** Using a Deep MLP **************")
     W_fc1_compress = self._matrix_project(sess, self.W_fc1, eps, nu)
     compress_op_1 = self.W_fc1.assign(W_fc1_compress)
 
@@ -265,6 +267,7 @@ class DeepMLP(object):
 
 class Model(object):
   def __init__(self):
+    print (" ========== Using a Model with Convolutional Layers =============== ")
     self.x_input = tf.placeholder(tf.float32, shape = [None, 784])
     self.y_input = tf.placeholder(tf.int64, shape = [None])
 
@@ -331,16 +334,19 @@ class Model(object):
       m = 2 * m - 1
       return m
 
-
-  def compressWeights(self, sess, eps=0.05, nu = 0.1):
-    print(" ......................... Entering Compress")
+  def compressFirstFC(selfs, sess, eps=0.05, nu=0.1):
+    print(" ......................... Compressing First FC layer ....... ")
     W_fc1_compress = self._matrix_project(sess, self.W_fc1, eps, nu)
     compress_op = self.W_fc1.assign(W_fc1_compress)
+    sess.run(compress_op)
+    print("......................... Done ................................")
+
+  def compressSecondFC(self, sess, eps=0.05, nu = 0.1):
+    print(" ......................... Compressing Second FC layer ....... ")
     W_fc2_compress = self._matrix_project(sess, self.W_fc2, eps, nu)
     compress_op_2 = self.W_fc2.assign(W_fc2_compress)
-    sess.run([compress_op, compress_op_2])
-    print(" ......................... Exiting Compress")
-
+    sess.run(compress_op_2)
+    print("......................... Done ................................")
     return
 
   @staticmethod
