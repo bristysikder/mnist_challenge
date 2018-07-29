@@ -25,6 +25,9 @@
 
   "_comment": "======COMPRESSEION CONFIGURATION=========",
   "c_eps": 0.1,
-  "nu":0.1,
-  "hidden_units":1024
+  "nu":0.2,
+  "hidden_units": 24,
+  "num_layers": 5,
+  "compress_first_fc": false,
+  "compress_second_fc": false
 }

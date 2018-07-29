@@ -1,7 +1,8 @@
 """Trains a model, saving checkpoints and tensorboard summaries along
    the way.
 
-    [NOTE:] Does not use Adversarial training
+   This is only for compressing the final convolutional layers.
+   Note that the models have Convolutional Layers on front of it.
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -37,8 +38,8 @@ max_num_training_steps = config['max_num_training_steps']
 num_output_steps = config['num_output_steps']
 num_summary_steps = config['num_summary_steps']
 num_checkpoint_steps = config['num_checkpoint_steps']
-num_hidden_units = config['hidden_units']
-num_layers = config['num_layers']
+should_compress_fc_first = config['compress_first_fc']
+should_compress_fc_second = config['compress_second_fc']
 batch_size = config['training_batch_size']
 c_eps = config['c_eps']
 nu = config['nu']
@@ -47,7 +48,7 @@ compression_k = np.log(1.0/nu) / (np.square(c_eps))
 # Setting up the data and the model
 mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
-model = DeepMLP(hidden_units=num_hidden_units, num_layers = num_layers)
+model = Model()
 
 # Setting up the optimizer
 train_step = tf.train.AdamOptimizer(1e-4).minimize(model.xent,
@@ -125,13 +126,17 @@ with tf.Session() as sess:
 
 
   print('=======================================================')
-  print('     Training Complete.')
+  print('     Training Complete... Conv Model is being used. ')
 
   test_dict = {model.x_input: mnist.test.images, model.y_input: mnist.test.labels}
   before_test_acc =  sess.run(model.accuracy, feed_dict=test_dict)
 
-  print('         Compressing the last Fully Connected layer')
-  model.compressWeights(sess, eps=c_eps, nu=nu)
+
+  if should_compress_fc_first:
+    model.compressFirstFC(sess, eps=c_eps, nu=nu)
+
+  if should_compress_fc_second:
+      model.compressSecondFC(sess, eps=c_eps, nu=nu)
 
 
   after_test_acc = sess.run(model.accuracy, feed_dict=test_dict)
